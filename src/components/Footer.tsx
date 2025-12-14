@@ -1,9 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Cloud, Mail, Phone, MapPin } from 'lucide-react';
-
 export default function Footer() {
-  return (
-    <footer className="bg-muted border-t border-border">
+  return <footer className="bg-muted border-t border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
@@ -87,9 +85,8 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Cloud Industrie. Tous droits réservés.</p>
+          <p className="bg-orange-400 text-teal-900">&copy; {new Date().getFullYear()} Cloud Industrie. Tous droits réservés.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 }
