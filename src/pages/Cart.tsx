@@ -1,61 +1,19 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import productRouter from '@/assets/product-router.jpg';
-import productStorage from '@/assets/product-storage.jpg';
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
+import { useCart } from '@/contexts/CartContext';
 
 export default function Cart() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: '1',
-      name: 'Routeur Pro Enterprise',
-      price: 299,
-      image: productRouter,
-      quantity: 1,
-    },
-    {
-      id: '2',
-      name: 'Cloud Storage 10TB',
-      price: 599,
-      image: productStorage,
-      quantity: 2,
-    },
-  ]);
-
-  const updateQuantity = (id: string, delta: number) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id: string) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const { items: cartItems, removeItem, updateQuantity, total } = useCart();
   const shipping = 20;
-  const total = subtotal + shipping;
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
+
       <main className="flex-1 pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <h1 className="font-display font-bold text-4xl mb-8">Panier</h1>
@@ -92,7 +50,7 @@ export default function Cart() {
                           <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2 border border-border rounded-lg">
                               <button
-                                onClick={() => updateQuantity(item.id, -1)}
+                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                 className="p-2 hover:bg-muted transition-colors"
                                 aria-label="Diminuer la quantité"
                               >
@@ -100,7 +58,7 @@ export default function Cart() {
                               </button>
                               <span className="px-4 font-semibold">{item.quantity}</span>
                               <button
-                                onClick={() => updateQuantity(item.id, 1)}
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                 className="p-2 hover:bg-muted transition-colors"
                                 aria-label="Augmenter la quantité"
                               >
@@ -133,7 +91,7 @@ export default function Cart() {
                     <div className="space-y-4 mb-6">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Sous-total</span>
-                        <span className="font-semibold">{subtotal}€</span>
+                        <span className="font-semibold">{total}€</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Livraison</span>
@@ -142,7 +100,7 @@ export default function Cart() {
                       <div className="border-t border-border pt-4">
                         <div className="flex justify-between">
                           <span className="font-display font-semibold text-lg">Total</span>
-                          <span className="font-display font-bold text-2xl text-primary">{total}€</span>
+                          <span className="font-display font-bold text-2xl text-primary">{total + shipping}€</span>
                         </div>
                       </div>
                     </div>

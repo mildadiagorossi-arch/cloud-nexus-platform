@@ -6,33 +6,51 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
+import { UserRole } from '@/types/auth';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login, isLoading } = useAuth();
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('client');
+
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupName, setSignupName] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login - in production, this would call an API
     if (loginEmail && loginPassword) {
-      toast.success('Connexion réussie !');
-      navigate('/dashboard');
+      try {
+        await login(loginEmail, selectedRole);
+        navigate('/dashboard');
+      } catch (error) {
+        toast.error('Erreur lors de la connexion');
+      }
     } else {
       toast.error('Veuillez remplir tous les champs');
     }
   };
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock signup - in production, this would call an API
     if (signupEmail && signupPassword && signupName) {
-      toast.success('Compte créé avec succès !');
-      navigate('/dashboard');
+      try {
+        await login(signupEmail, 'client'); // Default to client for signup
+        navigate('/dashboard');
+      } catch (error) {
+        toast.error('Erreur lors de l\'inscription');
+      }
     } else {
       toast.error('Veuillez remplir tous les champs');
     }
@@ -86,6 +104,21 @@ export default function Login() {
                       required
                     />
                   </div>
+
+                  <div className="space-y-2">
+                    <Label>Rôle (Simulation)</Label>
+                    <Select value={selectedRole} onValueChange={(v: UserRole) => setSelectedRole(v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choisir un rôle" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="client">Client</SelectItem>
+                        <SelectItem value="seller">Vendeur</SelectItem>
+                        <SelectItem value="admin">Administrateur</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <div className="text-right">
                     <Link to="/reset-password" className="text-sm text-primary hover:text-accent transition-colors">
                       Mot de passe oublié ?
@@ -93,9 +126,9 @@ export default function Login() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" variant="accent" className="w-full" size="lg">
-                    Se connecter
-                    <ArrowRight className="ml-2" />
+                  <Button type="submit" variant="accent" className="w-full" size="lg" disabled={isLoading}>
+                    {isLoading ? 'Connexion...' : 'Se connecter'}
+                    {!isLoading && <ArrowRight className="ml-2" />}
                   </Button>
                 </CardFooter>
               </form>
