@@ -11,7 +11,7 @@ export default function Footer() {
               <span className="font-display font-bold text-xl">Cloud Industrie</span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Solutions digitales et services cloud pour propulser votre entreprise vers l'avenir.
+              CloudIndustrie
             </p>
           </div>
 
