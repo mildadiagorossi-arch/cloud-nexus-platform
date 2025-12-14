@@ -13,7 +13,6 @@ import {
   Cloud,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -21,35 +20,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import DashboardOverview from '@/components/dashboard/DashboardOverview';
+import ProductsManager from '@/components/dashboard/ProductsManager';
+import SalesManager from '@/components/dashboard/SalesManager';
+import StatisticsView from '@/components/dashboard/StatisticsView';
+import MessagingView from '@/components/dashboard/MessagingView';
+import SettingsView from '@/components/dashboard/SettingsView';
 
 type UserRole = 'client' | 'seller' | 'admin';
+type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config';
 
 export default function Dashboard() {
-  const [currentRole, setCurrentRole] = useState<UserRole>('client');
+  const [currentRole, setCurrentRole] = useState<UserRole>('seller');
+  const [activeSection, setActiveSection] = useState<Section>('overview');
 
   const menuItems = {
     client: [
-      { icon: LayoutDashboard, label: 'Vue d\'ensemble', href: '#overview' },
-      { icon: ShoppingBag, label: 'Mes commandes', href: '#orders' },
-      { icon: FileText, label: 'Mes factures', href: '#invoices' },
-      { icon: Package, label: 'Services achetés', href: '#services' },
-      { icon: MessageSquare, label: 'Support', href: '#support' },
-      { icon: Settings, label: 'Paramètres', href: '#settings' },
+      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
+      { icon: ShoppingBag, label: 'Mes commandes', section: 'orders' as Section },
+      { icon: FileText, label: 'Mes factures', section: 'invoices' as Section },
+      { icon: Package, label: 'Services achetés', section: 'services' as Section },
+      { icon: MessageSquare, label: 'Support', section: 'support' as Section },
+      { icon: Settings, label: 'Paramètres', section: 'settings' as Section },
     ],
     seller: [
-      { icon: LayoutDashboard, label: 'Vue d\'ensemble', href: '#overview' },
-      { icon: Package, label: 'Mes produits', href: '#products' },
-      { icon: ShoppingBag, label: 'Ventes', href: '#sales' },
-      { icon: TrendingUp, label: 'Statistiques', href: '#stats' },
-      { icon: MessageSquare, label: 'Messages', href: '#messages' },
-      { icon: Settings, label: 'Paramètres', href: '#settings' },
+      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
+      { icon: Package, label: 'Mes produits', section: 'products' as Section },
+      { icon: ShoppingBag, label: 'Ventes', section: 'sales' as Section },
+      { icon: TrendingUp, label: 'Statistiques', section: 'stats' as Section },
+      { icon: MessageSquare, label: 'Messages', section: 'messages' as Section },
+      { icon: Settings, label: 'Paramètres', section: 'settings' as Section },
     ],
     admin: [
-      { icon: LayoutDashboard, label: 'Vue d\'ensemble', href: '#overview' },
-      { icon: Users, label: 'Utilisateurs', href: '#users' },
-      { icon: Package, label: 'Produits', href: '#products' },
-      { icon: TrendingUp, label: 'Analytics', href: '#analytics' },
-      { icon: Settings, label: 'Configuration', href: '#config' },
+      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
+      { icon: Users, label: 'Utilisateurs', section: 'users' as Section },
+      { icon: Package, label: 'Produits', section: 'products' as Section },
+      { icon: TrendingUp, label: 'Analytics', section: 'analytics' as Section },
+      { icon: Settings, label: 'Configuration', section: 'config' as Section },
     ],
   };
 
@@ -74,9 +81,30 @@ export default function Dashboard() {
     ],
   };
 
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'overview':
+        return <DashboardOverview stats={stats[currentRole]} role={currentRole} />;
+      case 'products':
+        return <ProductsManager />;
+      case 'sales':
+        return <SalesManager />;
+      case 'stats':
+      case 'analytics':
+        return <StatisticsView />;
+      case 'messages':
+      case 'support':
+        return <MessagingView />;
+      case 'settings':
+      case 'config':
+        return <SettingsView />;
+      default:
+        return <DashboardOverview stats={stats[currentRole]} role={currentRole} />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      {/* Header */}
       <header className="bg-background border-b border-border sticky top-0 z-10">
         <div className="flex items-center justify-between px-6 py-4">
           <Link to="/" className="flex items-center gap-2 group">
@@ -85,7 +113,7 @@ export default function Dashboard() {
           </Link>
           
           <div className="flex items-center gap-4">
-            <Select value={currentRole} onValueChange={(value: UserRole) => setCurrentRole(value)}>
+            <Select value={currentRole} onValueChange={(value: UserRole) => { setCurrentRole(value); setActiveSection('overview'); }}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
               </SelectTrigger>
@@ -107,82 +135,38 @@ export default function Dashboard() {
       </header>
 
       <div className="flex">
-        {/* Sidebar */}
         <aside className="w-64 bg-background border-r border-border min-h-[calc(100vh-73px)] p-4">
           <nav className="space-y-2">
             {menuItems[currentRole].map((item, i) => (
-              <a
+              <button
                 key={i}
-                href={item.href}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
+                onClick={() => setActiveSection(item.section)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  activeSection === item.section
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-accent hover:text-accent-foreground'
+                }`}
               >
                 <item.icon className="w-5 h-5" />
                 <span className="font-medium">{item.label}</span>
-              </a>
+              </button>
             ))}
           </nav>
+
+          <div className="mt-8 p-4 bg-muted rounded-lg">
+            <p className="text-sm font-medium mb-2">Besoin d'aide ?</p>
+            <p className="text-xs text-muted-foreground mb-3">Consultez notre documentation ou contactez le support.</p>
+            <Link to="/contact">
+              <Button variant="outline" size="sm" className="w-full">
+                Contacter le support
+              </Button>
+            </Link>
+          </div>
         </aside>
 
-        {/* Main Content */}
         <main className="flex-1 p-8">
           <div className="max-w-7xl mx-auto">
-            <div className="mb-8">
-              <h1 className="font-display font-bold text-3xl mb-2">
-                Dashboard {currentRole === 'client' ? 'Client' : currentRole === 'seller' ? 'Vendeur' : 'Admin'}
-              </h1>
-              <p className="text-muted-foreground">
-                Bienvenue sur votre espace de gestion
-              </p>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {stats[currentRole].map((stat, i) => (
-                <Card key={i}>
-                  <CardHeader className="pb-2">
-                    <CardDescription>{stat.label}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold mb-1">{stat.value}</div>
-                    <p className="text-sm text-muted-foreground">{stat.change}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Recent Activity */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Activité récente</CardTitle>
-                <CardDescription>
-                  {currentRole === 'client' && 'Vos dernières commandes et services'}
-                  {currentRole === 'seller' && 'Vos dernières ventes et activités'}
-                  {currentRole === 'admin' && 'Activités récentes sur la plateforme'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted transition-colors"
-                    >
-                      <div>
-                        <p className="font-semibold mb-1">
-                          {currentRole === 'client' && `Commande #${1000 + i}`}
-                          {currentRole === 'seller' && `Vente #${2000 + i}`}
-                          {currentRole === 'admin' && `Nouveau utilisateur #${3000 + i}`}
-                        </p>
-                        <p className="text-sm text-muted-foreground">Il y a {i} jour{i > 1 ? 's' : ''}</p>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        Voir détails
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {renderContent()}
           </div>
         </main>
       </div>
