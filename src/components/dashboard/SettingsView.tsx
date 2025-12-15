@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Save, User, Bell, Shield, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,9 +8,46 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { MarketplaceService, MarketplaceStats } from '@/services/marketplace.service';
+import { CreditCard, Wallet, Percent, DollarSign } from 'lucide-react';
 
 export default function SettingsView() {
   const { toast } = useToast();
+  const { user } = useAuth();
+
+  // Marketplace State
+  const [marketStats, setMarketStats] = useState<MarketplaceStats | null>(null);
+  const [commissionRate, setCommissionRate] = useState(10);
+  const [paymentConfig, setPaymentConfig] = useState({
+    stripeEnabled: false,
+    paypalEnabled: false,
+    stripeKey: '',
+    paypalEmail: ''
+  });
+
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      const stats = MarketplaceService.getStats();
+      setMarketStats(stats);
+      setCommissionRate(stats.commissionRate);
+    }
+    if (user?.role === 'seller') {
+      const stored = localStorage.getItem('cnp_seller_payment_config');
+      if (stored) setPaymentConfig(JSON.parse(stored));
+    }
+  }, [user]);
+
+  const handleSaveAdmin = () => {
+    MarketplaceService.updateCommissionRate(Number(commissionRate));
+    toast({ title: 'Configuration mise à jour', description: 'Taux de commission modifié.' });
+  };
+
+  const handleSaveSeller = () => {
+    localStorage.setItem('cnp_seller_payment_config', JSON.stringify(paymentConfig));
+    toast({ title: 'Paiements mis à jour', description: 'Vos méthodes de réception sont enregistrées.' });
+  };
+
   const [profile, setProfile] = useState({
     name: 'John Doe',
     email: 'john@example.com',
@@ -44,6 +81,18 @@ export default function SettingsView() {
 
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList>
+          {user?.role === 'admin' && (
+            <TabsTrigger value="marketplace" className="gap-2">
+              <DollarSign className="w-4 h-4" />
+              Marketplace
+            </TabsTrigger>
+          )}
+          {user?.role === 'seller' && (
+            <TabsTrigger value="payments" className="gap-2">
+              <Wallet className="w-4 h-4" />
+              Paiements
+            </TabsTrigger>
+          )}
           <TabsTrigger value="profile" className="gap-2">
             <User className="w-4 h-4" />
             Profil
@@ -61,6 +110,102 @@ export default function SettingsView() {
             Apparence
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="marketplace">
+          <Card>
+            <CardHeader>
+              <CardTitle>Administration Marketplace</CardTitle>
+              <CardDescription>Gérez les commissions et suivez les revenus.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 border rounded-lg bg-muted/50">
+                  <p className="text-sm font-medium text-muted-foreground">Volume Total</p>
+                  <p className="text-2xl font-bold">{marketStats?.totalVolume.toFixed(2)}€</p>
+                </div>
+                <div className="p-4 border rounded-lg bg-green-50/50 border-green-200">
+                  <p className="text-sm font-medium text-green-700">Revenus Com.</p>
+                  <p className="text-2xl font-bold text-green-700">+{marketStats?.platformRevenue.toFixed(2)}€</p>
+                </div>
+                <div className="p-4 border rounded-lg bg-blue-50/50 border-blue-200">
+                  <p className="text-sm font-medium text-blue-700">Reversé Vendeurs</p>
+                  <p className="text-2xl font-bold text-blue-700">{marketStats?.vendorPayouts.toFixed(2)}€</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Commission Plateforme (%)</Label>
+                <div className="flex gap-2 max-w-xs">
+                  <Input
+                    type="number"
+                    value={commissionRate}
+                    onChange={(e) => setCommissionRate(Number(e.target.value))}
+                  />
+                  <Button onClick={handleSaveAdmin}><Save className="w-4 h-4" /></Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="payments">
+          <Card>
+            <CardHeader>
+              <CardTitle>Configuration des Paiements</CardTitle>
+              <CardDescription>Connectez vos comptes pour recevoir vos gains.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between border p-4 rounded-lg">
+                <div className="flex items-center gap-4">
+                  <CreditCard className="h-6 w-6 text-indigo-600" />
+                  <div>
+                    <p className="font-medium">Stripe Connect</p>
+                    <p className="text-sm text-muted-foreground">Paiements par carte bancaire</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={paymentConfig.stripeEnabled}
+                  onCheckedChange={(c) => setPaymentConfig(prev => ({ ...prev, stripeEnabled: c }))}
+                />
+              </div>
+              {paymentConfig.stripeEnabled && (
+                <div className="pl-14 space-y-2">
+                  <Label>Clé API Publique</Label>
+                  <Input
+                    value={paymentConfig.stripeKey}
+                    onChange={(e) => setPaymentConfig(prev => ({ ...prev, stripeKey: e.target.value }))}
+                    placeholder="pk_test_..."
+                  />
+                </div>
+              )}
+
+              <div className="flex items-center justify-between border p-4 rounded-lg">
+                <div className="flex items-center gap-4">
+                  <div className="bg-blue-100 p-1 rounded"><span className="font-bold text-blue-700 text-xs">Pal</span></div>
+                  <div>
+                    <p className="font-medium">PayPal Business</p>
+                    <p className="text-sm text-muted-foreground">Virements PayPal</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={paymentConfig.paypalEnabled}
+                  onCheckedChange={(c) => setPaymentConfig(prev => ({ ...prev, paypalEnabled: c }))}
+                />
+              </div>
+              {paymentConfig.paypalEnabled && (
+                <div className="pl-14 space-y-2">
+                  <Label>Email PayPal</Label>
+                  <Input
+                    value={paymentConfig.paypalEmail}
+                    onChange={(e) => setPaymentConfig(prev => ({ ...prev, paypalEmail: e.target.value }))}
+                    placeholder="email@business.com"
+                  />
+                </div>
+              )}
+
+              <Button onClick={handleSaveSeller} className="w-full">Sauvegarder la configuration</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="profile">
           <Card>

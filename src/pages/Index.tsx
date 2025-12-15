@@ -11,7 +11,10 @@ import serviceDigital from '@/assets/service-digital.jpg';
 import serviceSecurity from '@/assets/service-security.jpg';
 import productRouter from '@/assets/product-router.jpg';
 import productStorage from '@/assets/product-storage.jpg';
+import { useTranslation } from 'react-i18next';
 
+// Note: In a real app, services and products content might also come from CMS or translation files if they are static.
+// For now, we'll keep the data array but could wrap titles in t() if we added keys for them.
 const services = [
   {
     id: 'cloud-infrastructure',
@@ -85,6 +88,8 @@ const testimonials = [
 ];
 
 export default function Index() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -101,24 +106,24 @@ export default function Index() {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-accent/80" />
         </div>
-        
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
           <h1 className="font-display font-bold text-primary-foreground mb-6 animate-fade-in">
-            Propulsez votre entreprise vers le cloud
+            {t('hero.title')}
           </h1>
           <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto animate-fade-in">
-            Solutions digitales et services cloud de nouvelle génération pour transformer votre business
+            {t('hero.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
             <Link to="/services">
               <Button variant="hero" size="xl">
-                Découvrir nos services
+                {t('hero.cta_services')}
                 <ArrowRight className="ml-2" />
               </Button>
             </Link>
             <Link to="/shop">
               <Button variant="outline" size="xl" className="bg-background/10 backdrop-blur-sm border-primary-foreground text-primary-foreground hover:bg-background/20">
-                Explorer la boutique
+                {t('hero.cta_shop')}
               </Button>
             </Link>
           </div>
@@ -137,10 +142,10 @@ export default function Index() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[
-              { icon: Cloud, title: 'Cloud Native', desc: 'Infrastructure moderne' },
-              { icon: Shield, title: 'Sécurisé', desc: 'Protection maximale' },
-              { icon: Zap, title: 'Performant', desc: 'Vitesse optimale' },
-              { icon: Users, title: 'Support 24/7', desc: 'Équipe dédiée' },
+              { icon: Cloud, title: t('features.cloud_native.title'), desc: t('features.cloud_native.desc') },
+              { icon: Shield, title: t('features.secure.title'), desc: t('features.secure.desc') },
+              { icon: Zap, title: t('features.performant.title'), desc: t('features.performant.desc') },
+              { icon: Users, title: t('features.support.title'), desc: t('features.support.desc') },
             ].map((feature, i) => (
               <div
                 key={i}
@@ -159,9 +164,9 @@ export default function Index() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="font-display font-bold mb-4">Nos Services</h2>
+            <h2 className="font-display font-bold mb-4">{t('home_sections.services.title')}</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Des solutions complètes pour accélérer votre transformation digitale
+              {t('home_sections.services.subtitle')}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -172,7 +177,7 @@ export default function Index() {
           <div className="text-center mt-12">
             <Link to="/services">
               <Button variant="outline" size="lg">
-                Voir tous les services
+                {t('home_sections.services.cta')}
                 <ArrowRight className="ml-2" />
               </Button>
             </Link>
@@ -184,9 +189,9 @@ export default function Index() {
       <section className="py-20 bg-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="font-display font-bold mb-4">Nos Produits</h2>
+            <h2 className="font-display font-bold mb-4">{t('home_sections.products.title')}</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Matériel et équipements professionnels pour votre infrastructure IT
+              {t('home_sections.products.subtitle')}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -197,7 +202,7 @@ export default function Index() {
           <div className="text-center mt-12">
             <Link to="/shop">
               <Button variant="accent" size="lg">
-                Explorer la boutique
+                {t('home_sections.products.cta')}
                 <ArrowRight className="ml-2" />
               </Button>
             </Link>
@@ -209,9 +214,9 @@ export default function Index() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="font-display font-bold mb-4">Ce que disent nos clients</h2>
+            <h2 className="font-display font-bold mb-4">{t('home_sections.testimonials.title')}</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Ils nous font confiance pour leur transformation digitale
+              {t('home_sections.testimonials.subtitle')}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -239,19 +244,19 @@ export default function Index() {
       {/* CTA Section */}
       <section className="py-20 bg-gradient-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-display font-bold mb-6">Prêt à transformer votre entreprise ?</h2>
+          <h2 className="font-display font-bold mb-6">{t('home_sections.cta.title')}</h2>
           <p className="text-xl mb-8 opacity-90">
-            Contactez-nous dès aujourd'hui pour discuter de vos besoins et découvrir comment nous pouvons vous aider
+            {t('home_sections.cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact">
               <Button variant="hero" size="xl" className="bg-background text-primary hover:bg-background/90">
-                Nous contacter
+                {t('home_sections.cta.btn_contact')}
               </Button>
             </Link>
             <Link to="/dashboard">
               <Button variant="outline" size="xl" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
-                Accéder au dashboard
+                {t('home_sections.cta.btn_dashboard')}
               </Button>
             </Link>
           </div>

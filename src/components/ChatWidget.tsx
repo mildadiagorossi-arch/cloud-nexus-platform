@@ -6,7 +6,9 @@ import { MessageCircle, X, Send } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/contexts/AuthContext';
 
-interface Message {
+import { ChatService, ChatMessage, Conversation } from '@/services/chat.service';
+
+interface WidgetMessage {
     id: number;
     text: string;
     sender: 'me' | 'other';
@@ -16,11 +18,46 @@ interface Message {
 export default function ChatWidget() {
     const { user } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState<Message[]>([
-        { id: 1, text: "Bonjour ! Comment pouvons-nous vous aider ?", sender: 'other', time: '10:00' }
-    ]);
+    const [messages, setMessages] = useState<WidgetMessage[]>([]);
     const [inputValue, setInputValue] = useState('');
+    const [conversation, setConversation] = useState<Conversation | null>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
+
+    // Initialize conversation
+    useEffect(() => {
+        if (user && isOpen) {
+            import('@/services/chat.service').then(({ ChatService }) => {
+                const conv = ChatService.startConversation(user.id, user.name || user.email);
+                setConversation(conv);
+                // Load initial messages
+                const history = ChatService.getMessages(conv.id);
+                setMessages(history.map(m => ({
+                    id: m.id,
+                    text: m.content,
+                    sender: m.senderId === user.id ? 'me' : 'other',
+                    time: new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                }) as any));
+            });
+        }
+    }, [user, isOpen]);
+
+    // Poll for new messages
+    useEffect(() => {
+        if (!isOpen || !conversation) return;
+
+        const interval = setInterval(async () => {
+            const { ChatService } = await import('@/services/chat.service');
+            const latest = ChatService.getMessages(conversation.id);
+            setMessages(latest.map(m => ({
+                id: m.id,
+                text: m.content,
+                sender: m.senderId === user.id ? 'me' : 'other', // If senderId matches user, it's 'me'
+                time: new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }) as any));
+        }, 2000); // Check every 2s
+
+        return () => clearInterval(interval);
+    }, [isOpen, conversation, user]);
 
     useEffect(() => {
         if (isOpen && bottomRef.current) {
@@ -28,29 +65,25 @@ export default function ChatWidget() {
         }
     }, [messages, isOpen]);
 
-    const handleSendMessage = (e?: React.FormEvent) => {
+    const handleSendMessage = async (e?: React.FormEvent) => {
         e?.preventDefault();
-        if (!inputValue.trim()) return;
+        if (!inputValue.trim() || !conversation || !user) return;
 
-        const newMessage: Message = {
+        const { ChatService } = await import('@/services/chat.service');
+
+        // Optimistic UI
+        const newMessage: WidgetMessage = {
             id: Date.now(),
             text: inputValue,
             sender: 'me',
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
-
         setMessages(prev => [...prev, newMessage]);
+        const textToSend = inputValue;
         setInputValue('');
 
-        // Simulate response
-        setTimeout(() => {
-            setMessages(prev => [...prev, {
-                id: Date.now() + 1,
-                text: "Un agent va prendre en charge votre demande dans un instant.",
-                sender: 'other',
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            }]);
-        }, 1000);
+        // Send to backend
+        ChatService.sendMessage(conversation.id, user.id, user.name || user.email, textToSend);
     };
 
     if (!user) return null;
@@ -86,8 +119,8 @@ export default function ChatWidget() {
                                     <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
                                         <div
                                             className={`max-w-[80%] px-3 py-2 rounded-lg text-sm ${msg.sender === 'me'
-                                                    ? 'bg-primary text-primary-foreground rounded-tr-none'
-                                                    : 'bg-muted text-foreground rounded-tl-none'
+                                                ? 'bg-primary text-primary-foreground rounded-tr-none'
+                                                : 'bg-muted text-foreground rounded-tl-none'
                                                 }`}
                                         >
                                             <p>{msg.text}</p>

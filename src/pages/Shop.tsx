@@ -5,12 +5,14 @@ import ProductCard from '@/components/ProductCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useProducts } from '@/contexts/ProductContext';
 
+import SEO from "@/components/SEO";
+
 export default function Shop() {
   const { products } = useProducts();
   const [category, setCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('popularity');
 
-  const filteredProducts = products.filter(product => 
+  const filteredProducts = products.filter(product =>
     category === 'all' || product.category === category
   );
 
@@ -26,8 +28,9 @@ export default function Shop() {
 
   return (
     <div className="min-h-screen">
+      <SEO title="Boutique" description="Parcourez notre catalogue complet de matériel informatique et solutions cloud." />
       <Navbar />
-      
+
       <main className="pt-16">
         {/* Hero Section */}
         <section className="bg-gradient-primary text-primary-foreground py-20">
@@ -81,8 +84,8 @@ export default function Shop() {
             {sortedProducts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {sortedProducts.map((product) => (
-                  <ProductCard 
-                    key={product.id} 
+                  <ProductCard
+                    key={product.id}
                     id={product.id.toString()}
                     name={product.name}
                     price={product.price}

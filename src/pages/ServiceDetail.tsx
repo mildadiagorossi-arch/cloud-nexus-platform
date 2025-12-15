@@ -8,7 +8,22 @@ import serviceCloud from '@/assets/service-cloud.jpg';
 import serviceDigital from '@/assets/service-digital.jpg';
 import serviceSecurity from '@/assets/service-security.jpg';
 
-const servicesData: Record<string, any> = {
+interface PricingPlan {
+  name: string;
+  price: string;
+  features: string[];
+}
+
+interface ServiceData {
+  title: string;
+  description: string;
+  image: string;
+  longDescription: string;
+  features: string[];
+  pricing: PricingPlan[];
+}
+
+const servicesData: Record<string, ServiceData> = {
   'cloud-infrastructure': {
     title: 'Infrastructure Cloud',
     description: 'Solutions cloud scalables et sécurisées pour votre entreprise',
@@ -88,7 +103,7 @@ export default function ServiceDetail() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      
+
       <main className="pt-16">
         {/* Hero Section */}
         <section className="relative py-20 bg-gradient-subtle">
@@ -97,7 +112,7 @@ export default function ServiceDetail() {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Retour aux services
             </Link>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
                 <h1 className="font-display font-bold mb-6">{service.title}</h1>
@@ -130,7 +145,7 @@ export default function ServiceDetail() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="font-display font-bold text-3xl mb-12 text-center">Tarification</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {service.pricing.map((plan: any, i: number) => (
+              {service.pricing.map((plan: PricingPlan, i: number) => (
                 <Card key={i} className={`p-8 ${i === 1 ? 'ring-2 ring-primary shadow-xl scale-105' : ''}`}>
                   <div className="text-center mb-6">
                     <h3 className="font-display font-bold text-2xl mb-2">{plan.name}</h3>

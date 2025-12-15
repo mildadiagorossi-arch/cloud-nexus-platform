@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Cloud, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,9 +20,19 @@ import { UserRole } from '@/types/auth';
 export default function Login() {
   const navigate = useNavigate();
   const { login, isLoading } = useAuth();
+  const [searchParams] = useSearchParams();
+  const roleParam = searchParams.get('role') as UserRole | null;
+
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole>('client');
+  const [selectedRole, setSelectedRole] = useState<UserRole>(roleParam || 'client');
+
+  // Update role if URL param changes
+  useEffect(() => {
+    if (roleParam) {
+      setSelectedRole(roleParam);
+    }
+  }, [roleParam]);
 
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
@@ -105,19 +115,20 @@ export default function Login() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Rôle (Simulation)</Label>
-                    <Select value={selectedRole} onValueChange={(v: UserRole) => setSelectedRole(v)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choisir un rôle" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="client">Client</SelectItem>
-                        <SelectItem value="seller">Vendeur</SelectItem>
-                        <SelectItem value="admin">Administrateur</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {/* Only show role selector if triggered by specific routes or if already selected as non-client */}
+                  {(roleParam === 'admin' || roleParam === 'seller') && (
+                    <div className="space-y-2">
+                      <Label className="text-destructive uppercase tracking-wide text-xs font-bold">
+                        Accès Restreint : {roleParam === 'admin' ? 'Administrateur' : 'Vendeur'}
+                      </Label>
+                      <div className="p-2 bg-destructive/10 border border-destructive/20 rounded text-sm text-destructive">
+                        Vous vous connectez en tant que <strong>{roleParam === 'admin' ? 'Administrateur' : 'Vendeur'}</strong>.
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Hidden input for role to ensure it is submitted if needed, though state is key */}
+                  {/* For dev/demo simplicity, we just keep the state logic but hide the UI switcher */}
 
                   <div className="text-right">
                     <Link to="/reset-password" className="text-sm text-primary hover:text-accent transition-colors">

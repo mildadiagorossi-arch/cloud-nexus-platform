@@ -1,0 +1,17 @@
+{
+    "common": {
+        "welcome": "Bienvenido a Cloud Nexus",
+        "shop": "Tienda",
+        "services": "Servicios",
+        "contact": "Contacto",
+        "login": "Iniciar sesión",
+        "search": "Buscar...",
+        "cart": "Carrito"
+    },
+    "hero": {
+        "title": "Soluciones Cloud y Redes para el Futuro",
+        "subtitle": "Infraestructura de alto rendimiento, ciberseguridad y hardware profesional para su empresa.",
+        "cta_shop": "Ver productos",
+        "cta_services": "Nuestros servicios"
+    }
+}

@@ -1,0 +1,61 @@
+{
+    "common": {
+        "welcome": "Bienvenue sur Cloud Nexus",
+        "shop": "Boutique",
+        "services": "Services",
+        "contact": "Contact",
+        "login": "Connexion",
+        "search": "Rechercher...",
+        "cart": "Panier",
+        "dashboard": "Tableau de Bord",
+        "read_more": "En savoir plus",
+        "view_all": "Tout voir",
+        "add_to_cart": "Ajouter au panier"
+    },
+    "hero": {
+        "title": "Propulsez votre entreprise vers le cloud",
+        "subtitle": "Solutions digitales et services cloud de nouvelle génération pour transformer votre business",
+        "cta_services": "Découvrir nos services",
+        "cta_shop": "Explorer la boutique"
+    },
+    "features": {
+        "cloud_native": {
+            "title": "Cloud Native",
+            "desc": "Infrastructure moderne"
+        },
+        "secure": {
+            "title": "Sécurisé",
+            "desc": "Protection maximale"
+        },
+        "performant": {
+            "title": "Performant",
+            "desc": "Vitesse optimale"
+        },
+        "support": {
+            "title": "Support 24/7",
+            "desc": "Équipe dédiée"
+        }
+    },
+    "home_sections": {
+        "services": {
+            "title": "Nos Services",
+            "subtitle": "Des solutions complètes pour accélérer votre transformation digitale",
+            "cta": "Voir tous les services"
+        },
+        "products": {
+            "title": "Nos Produits",
+            "subtitle": "Matériel et équipements professionnels pour votre infrastructure IT",
+            "cta": "Explorer la boutique"
+        },
+        "testimonials": {
+            "title": "Ce que disent nos clients",
+            "subtitle": "Ils nous font confiance pour leur transformation digitale"
+        },
+        "cta": {
+            "title": "Prêt à transformer votre entreprise ?",
+            "subtitle": "Contactez-nous dès aujourd'hui pour discuter de vos besoins et découvrir comment nous pouvons vous aider",
+            "btn_contact": "Nous contacter",
+            "btn_dashboard": "Accéder au dashboard"
+        }
+    }
+}

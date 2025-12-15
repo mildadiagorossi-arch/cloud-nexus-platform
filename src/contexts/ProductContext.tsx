@@ -1,26 +1,17 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-export interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  category: string;
-  image: string;
-  rating?: number;
-}
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Product } from '@/types/data';
+import { WordPressService } from '@/services/wordpress.service';
 
 interface ProductContextType {
   products: Product[];
   addProduct: (product: Omit<Product, 'id'>) => void;
-  updateProduct: (id: number, product: Partial<Product>) => void;
-  deleteProduct: (id: number) => void;
+  updateProduct: (id: string, product: Partial<Product>) => void;
+  deleteProduct: (id: string) => void;
 }
 
 const defaultProducts: Product[] = [
   {
-    id: 1,
+    id: "1",
     name: "Routeur Wi-Fi 6",
     description: "Routeur haute performance avec Wi-Fi 6",
     price: 89990,
@@ -30,7 +21,7 @@ const defaultProducts: Product[] = [
     rating: 4.5
   },
   {
-    id: 2,
+    id: "2",
     name: "SSD NVMe 1TB",
     description: "Stockage ultra-rapide NVMe",
     price: 129990,
@@ -40,7 +31,7 @@ const defaultProducts: Product[] = [
     rating: 4.8
   },
   {
-    id: 3,
+    id: "3",
     name: "Caméra IP 4K",
     description: "Caméra de surveillance 4K avec vision nocturne",
     price: 79990,
@@ -50,7 +41,7 @@ const defaultProducts: Product[] = [
     rating: 4.2
   },
   {
-    id: 4,
+    id: "4",
     name: "Switch Gigabit 8 ports",
     description: "Switch réseau professionnel",
     price: 45990,
@@ -60,7 +51,7 @@ const defaultProducts: Product[] = [
     rating: 4.6
   },
   {
-    id: 5,
+    id: "5",
     name: "NAS 4 baies",
     description: "Serveur de stockage réseau",
     price: 299990,
@@ -70,7 +61,7 @@ const defaultProducts: Product[] = [
     rating: 4.9
   },
   {
-    id: 6,
+    id: "6",
     name: "Firewall UTM",
     description: "Protection réseau avancée",
     price: 199990,
@@ -86,16 +77,31 @@ const ProductContext = createContext<ProductContextType | undefined>(undefined);
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<Product[]>(defaultProducts);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      // Only attempt fetch if environment variable is set
+      if (import.meta.env.VITE_WC_API_URL) {
+        const wpProducts = await WordPressService.getAllProducts();
+        if (wpProducts.length > 0) {
+          console.log("Loaded products from WordPress:", wpProducts.length);
+          setProducts(wpProducts);
+        }
+      }
+    };
+    fetchProducts();
+  }, []);
+
   const addProduct = (product: Omit<Product, 'id'>) => {
     const newProduct: Product = {
       ...product,
-      id: Math.max(...products.map(p => p.id), 0) + 1,
-      rating: 0
+      id: `local_${Date.now()}`,
+      rating: 0,
+      reviews: []
     };
     setProducts(prev => [...prev, newProduct]);
   };
 
-  const updateProduct = (id: number, updatedData: Partial<Product>) => {
+  const updateProduct = (id: string, updatedData: Partial<Product>) => {
     setProducts(prev =>
       prev.map(product =>
         product.id === id ? { ...product, ...updatedData } : product
@@ -103,7 +109,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const deleteProduct = (id: number) => {
+  const deleteProduct = (id: string) => {
     setProducts(prev => prev.filter(product => product.id !== id));
   };
 

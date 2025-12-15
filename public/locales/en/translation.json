@@ -1,0 +1,61 @@
+{
+    "common": {
+        "welcome": "Welcome to Cloud Nexus",
+        "shop": "Shop",
+        "services": "Services",
+        "contact": "Contact",
+        "login": "Login",
+        "search": "Search...",
+        "cart": "Cart",
+        "dashboard": "Dashboard",
+        "read_more": "Read More",
+        "view_all": "View All",
+        "add_to_cart": "Add to Cart"
+    },
+    "hero": {
+        "title": "Propel your business to the cloud",
+        "subtitle": "Next-generation digital solutions and cloud services to transform your business",
+        "cta_services": "Discover our services",
+        "cta_shop": "Explore the shop"
+    },
+    "features": {
+        "cloud_native": {
+            "title": "Cloud Native",
+            "desc": "Modern infrastructure"
+        },
+        "secure": {
+            "title": "Secure",
+            "desc": "Maximum protection"
+        },
+        "performant": {
+            "title": "Performant",
+            "desc": "Optimal speed"
+        },
+        "support": {
+            "title": "24/7 Support",
+            "desc": "Dedicated team"
+        }
+    },
+    "home_sections": {
+        "services": {
+            "title": "Our Services",
+            "subtitle": "Complete solutions to accelerate your digital transformation",
+            "cta": "View all services"
+        },
+        "products": {
+            "title": "Our Products",
+            "subtitle": "Professional hardware and equipment for your IT infrastructure",
+            "cta": "Explore the shop"
+        },
+        "testimonials": {
+            "title": "What our clients say",
+            "subtitle": "They trust us with their digital transformation"
+        },
+        "cta": {
+            "title": "Ready to transform your business?",
+            "subtitle": "Contact us today to discuss your needs and discover how we can help you",
+            "btn_contact": "Contact Us",
+            "btn_dashboard": "Access Dashboard"
+        }
+    }
+}

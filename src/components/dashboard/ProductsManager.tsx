@@ -22,7 +22,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { useProducts, Product } from '@/contexts/ProductContext';
+import { useProducts } from '@/contexts/ProductContext';
+import { Product } from '@/types/data';
 
 export default function ProductsManager() {
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
@@ -40,7 +41,7 @@ export default function ProductsManager() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (editingProduct) {
       updateProduct(editingProduct.id, {
         name: formData.name,
@@ -62,7 +63,7 @@ export default function ProductsManager() {
       });
       toast({ title: 'Produit ajouté', description: 'Le produit est maintenant visible dans la boutique.' });
     }
-    
+
     resetForm();
   };
 
@@ -85,7 +86,7 @@ export default function ProductsManager() {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     deleteProduct(id);
     toast({ title: 'Produit supprimé', description: 'Le produit a été retiré de la boutique.' });
   };
@@ -107,7 +108,7 @@ export default function ProductsManager() {
               Ajouter un produit
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingProduct ? 'Modifier le produit' : 'Nouveau produit'}</DialogTitle>
               <DialogDescription>
@@ -170,6 +171,43 @@ export default function ProductsManager() {
                     <SelectItem value="Cloud">Cloud</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Image du produit</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="image-url" className="text-xs text-muted-foreground">Par URL</Label>
+                    <Input
+                      id="image-url"
+                      value={formData.image}
+                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="image-file" className="text-xs text-muted-foreground">Ou Téléverser</Label>
+                    <Input
+                      id="image-file"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setFormData(prev => ({ ...prev, image: reader.result as string }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+                {formData.image && (
+                  <div className="mt-2 relative w-full h-32 bg-muted rounded-md overflow-hidden">
+                    <img src={formData.image} alt="Aperçu" className="object-cover w-full h-full" />
+                  </div>
+                )}
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={resetForm}>Annuler</Button>

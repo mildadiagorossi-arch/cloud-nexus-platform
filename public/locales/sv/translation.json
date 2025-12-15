@@ -1,0 +1,17 @@
+{
+    "common": {
+        "welcome": "Välkommen till Cloud Nexus",
+        "shop": "Butik",
+        "services": "Tjänster",
+        "contact": "Kontakt",
+        "login": "Logga in",
+        "search": "Sök...",
+        "cart": "Varukorg"
+    },
+    "hero": {
+        "title": "Moln- och nätverkslösningar för framtiden",
+        "subtitle": "Högpresterande infrastruktur, cybersäkerhet och professionell hårdvara för ditt företag.",
+        "cta_shop": "Visa produkter",
+        "cta_services": "Våra tjänster"
+    }
+}
