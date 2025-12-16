@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { GetStorefrontUseCase } from '../../application/use-cases/vendor/GetStorefrontUseCase';
+import { GetStorefrontUseCase } from '../../../application/use-cases/vendor/GetStorefrontUseCase';
 
 @Controller('store')
 export class StorefrontController {

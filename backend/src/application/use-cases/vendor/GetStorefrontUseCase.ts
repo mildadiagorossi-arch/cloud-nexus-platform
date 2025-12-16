@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
-import { VendorRepository } from '../../domain/marketplace/ports/VendorRepository';
-import { SocialMediaPort } from '../../domain/marketplace/ports/SocialMediaPort';
+import { VendorRepository } from '../../../domain/marketplace/ports/VendorRepository';
+import { SocialMediaPort } from '../../../domain/marketplace/ports/SocialMediaPort';
 
 export class GetStorefrontUseCase {
   constructor(
