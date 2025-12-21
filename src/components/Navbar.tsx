@@ -2,21 +2,23 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ShoppingCart, User, Cloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useCart } from '@/contexts/CartContext';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { getTotalItems } = useCart();
+  const totalItems = getTotalItems();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <Cloud className="w-8 h-8 text-primary group-hover:text-accent transition-colors" />
             <span className="font-display font-bold text-xl">Cloud Industrie</span>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <Link to="/" className="text-foreground hover:text-primary transition-colors">
               Accueil
@@ -27,8 +29,16 @@ export default function Navbar() {
             <Link to="/shop" className="text-foreground hover:text-primary transition-colors">
               Boutique
             </Link>
-            <Link to="/cart" className="text-foreground hover:text-primary transition-colors">
+            <Link to="/livepulse" className="text-foreground hover:text-primary transition-colors">
+              Live Pulse
+            </Link>
+            <Link to="/cart" className="text-foreground hover:text-primary transition-colors relative">
               <ShoppingCart className="w-5 h-5" />
+              {totalItems > 0 && (
+                <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                  {totalItems}
+                </Badge>
+              )}
             </Link>
           </div>
 

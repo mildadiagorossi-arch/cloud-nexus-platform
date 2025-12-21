@@ -1,56 +1,19 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import productRouter from '@/assets/product-router.jpg';
-import productStorage from '@/assets/product-storage.jpg';
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
+import { useCart } from '@/contexts/CartContext';
 
 export default function Cart() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: '1',
-      name: 'Routeur Pro Enterprise',
-      price: 299,
-      image: productRouter,
-      quantity: 1,
-    },
-    {
-      id: '2',
-      name: 'Cloud Storage 10TB',
-      price: 599,
-      image: productStorage,
-      quantity: 2,
-    },
-  ]);
+  const { items, updateQuantity, removeFromCart, getTotalPrice } = useCart();
 
-  const updateQuantity = (id: string, delta: number) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id: string) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = 20;
+  const subtotal = getTotalPrice();
+  const shipping = items.length > 0 ? 2000 : 0;
   const total = subtotal + shipping;
+
+  const formatPrice = (cents: number) => (cents / 100).toFixed(2).replace('.', ',');
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -60,7 +23,7 @@ export default function Cart() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <h1 className="font-display font-bold text-4xl mb-8">Panier</h1>
 
-          {cartItems.length === 0 ? (
+          {items.length === 0 ? (
             <Card className="text-center py-12">
               <CardContent>
                 <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
@@ -75,49 +38,45 @@ export default function Cart() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Cart Items */}
               <div className="lg:col-span-2 space-y-4">
-                {cartItems.map((item) => (
-                  <Card key={item.id}>
+                {items.map((item) => (
+                  <Card key={item.product.id}>
                     <CardContent className="p-6">
                       <div className="flex gap-4">
                         <img
-                          src={item.image}
-                          alt={item.name}
+                          src={item.product.image}
+                          alt={item.product.name}
                           className="w-24 h-24 object-cover rounded-lg"
                         />
                         <div className="flex-1">
-                          <h3 className="font-display font-semibold text-lg mb-2">{item.name}</h3>
-                          <p className="text-2xl font-bold text-primary mb-4">{item.price}€</p>
+                          <h3 className="font-display font-semibold text-lg mb-2">{item.product.name}</h3>
+                          <p className="text-2xl font-bold text-primary mb-4">{formatPrice(item.product.price)}€</p>
                           <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2 border border-border rounded-lg">
                               <button
-                                onClick={() => updateQuantity(item.id, -1)}
+                                onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                                 className="p-2 hover:bg-muted transition-colors"
-                                aria-label="Diminuer la quantité"
                               >
                                 <Minus className="w-4 h-4" />
                               </button>
                               <span className="px-4 font-semibold">{item.quantity}</span>
                               <button
-                                onClick={() => updateQuantity(item.id, 1)}
+                                onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                                 className="p-2 hover:bg-muted transition-colors"
-                                aria-label="Augmenter la quantité"
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
                             </div>
                             <button
-                              onClick={() => removeItem(item.id)}
+                              onClick={() => removeFromCart(item.product.id)}
                               className="text-destructive hover:text-destructive/80 transition-colors"
-                              aria-label="Retirer du panier"
                             >
                               <Trash2 className="w-5 h-5" />
                             </button>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-xl font-bold">{item.price * item.quantity}€</p>
+                          <p className="text-xl font-bold">{formatPrice(item.product.price * item.quantity)}€</p>
                         </div>
                       </div>
                     </CardContent>
@@ -125,32 +84,29 @@ export default function Cart() {
                 ))}
               </div>
 
-              {/* Order Summary */}
               <div>
                 <Card className="sticky top-20">
                   <CardContent className="p-6">
-                    <h2 className="font-display font-semibold text-xl mb-6">Résumé de la commande</h2>
+                    <h2 className="font-display font-semibold text-xl mb-6">Résumé</h2>
                     <div className="space-y-4 mb-6">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Sous-total</span>
-                        <span className="font-semibold">{subtotal}€</span>
+                        <span className="font-semibold">{formatPrice(subtotal)}€</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Livraison</span>
-                        <span className="font-semibold">{shipping}€</span>
+                        <span className="font-semibold">{formatPrice(shipping)}€</span>
                       </div>
                       <div className="border-t border-border pt-4">
                         <div className="flex justify-between">
                           <span className="font-display font-semibold text-lg">Total</span>
-                          <span className="font-display font-bold text-2xl text-primary">{total}€</span>
+                          <span className="font-display font-bold text-2xl text-primary">{formatPrice(total)}€</span>
                         </div>
                       </div>
                     </div>
-                    <Link to="/checkout">
-                      <Button variant="accent" size="lg" className="w-full mb-4">
-                        Procéder au paiement
-                      </Button>
-                    </Link>
+                    <Button variant="accent" size="lg" className="w-full mb-4">
+                      Procéder au paiement
+                    </Button>
                     <Link to="/shop">
                       <Button variant="outline" size="lg" className="w-full">
                         Continuer mes achats
