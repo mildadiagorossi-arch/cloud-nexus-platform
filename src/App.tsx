@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProductProvider } from "@/contexts/ProductContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { LivePulseProvider } from "@/contexts/LivePulseContext";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 import Index from "./pages/Index";
 import Services from "./pages/Services";
 import ServiceDetail from "./pages/ServiceDetail";
@@ -45,6 +46,7 @@ const App = () => {
             <TooltipProvider>
               <Toaster />
               <Sonner />
+              <OfflineIndicator />
               <BrowserRouter>
                 <Routes>
                   <Route path="/" element={<Index />} />
