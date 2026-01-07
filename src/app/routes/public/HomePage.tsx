@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Cloud, Shield, Zap, Users, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import ServiceCard from '@/components/ServiceCard';
-import ProductCard from '@/components/ProductCard';
+import Navbar from '@/components/common/Navbar';
+import Footer from '@/components/common/Footer';
+import ServiceCard from '@/components/shop/ServiceCard';
+import ProductCard from '@/components/shop/ProductCard';
 import heroBackground from '@/assets/hero-background.jpg';
 import serviceCloud from '@/assets/service-cloud.jpg';
 import serviceDigital from '@/assets/service-digital.jpg';

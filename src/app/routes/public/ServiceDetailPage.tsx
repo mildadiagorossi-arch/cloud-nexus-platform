@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Check } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import Navbar from '@/components/common/Navbar';
+import Footer from '@/components/common/Footer';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import serviceCloud from '@/assets/service-cloud.jpg';

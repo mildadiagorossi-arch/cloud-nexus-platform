@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import ProductCard from '@/components/ProductCard';
+import Navbar from '@/components/common/Navbar';
+import Footer from '@/components/common/Footer';
+import ProductCard from '@/components/shop/ProductCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useProducts } from '@/contexts/ProductContext';
 
