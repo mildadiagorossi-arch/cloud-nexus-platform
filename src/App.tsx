@@ -12,7 +12,7 @@ import ServiceDetail from "./pages/ServiceDetail";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
-import Login from "./pages/Login";
+import Login from "./features/auth/routes/Login";
 import Dashboard from "./pages/Dashboard";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -23,7 +23,7 @@ import { initGA, logPageView } from '@/lib/analytics';
 import { useEffect } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import CloudLayout from "@/app/cloud/layouts/CloudLayout";
-import CloudDashboard from "@/app/cloud/pages/CloudDashboard";
+import CloudDashboard from "./features/cloud/routes/CloudDashboard";
 import Droplets from "@/app/cloud/pages/Droplets";
 import Domains from "@/app/cloud/pages/Domains";
 import Databases from "@/app/cloud/pages/Databases";
@@ -104,18 +104,10 @@ const App = () => {
 
                     {/* Cloud Infrastructure Routes */}
                     <Route path="/cloud" element={
-                      <ProtectedRoute allowedRoles={['admin', 'owner', 'seller']}>
-                        <CloudLayout />
+                      <ProtectedRoute>
+                        <CloudDashboard />
                       </ProtectedRoute>
-                    }>
-                      <Route index element={<CloudDashboard />} />
-                      <Route path="droplets" element={<Droplets />} />
-                      <Route path="domains" element={<Domains />} />
-                      <Route path="databases" element={<Databases />} />
-                      <Route path="billing" element={<CloudBilling />} />
-                      <Route path="team" element={<Team />} />
-                      <Route path="settings" element={<CloudSettings />} />
-                    </Route>
+                    } />
 
                     {/* Live Pulse Routes */}
                     <Route path="/live-pulse" element={
@@ -136,7 +128,7 @@ const App = () => {
           </ProductProvider>
         </AuthProvider>
       </QueryClientProvider>
-    </HelmetProvider>
+    </HelmetProvider >
   );
 };
 

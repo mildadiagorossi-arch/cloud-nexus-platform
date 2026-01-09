@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Identity / Auth
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  teams        TeamMember[]
+  droplets     Droplet[]
+  domains      Domain[]
+  databases    Database[]
+  billings     Billing[]
+}
+
+model Team {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  
+  members   TeamMember[]
+  droplets  Droplet[]
+}
+
+model TeamMember {
+  id     String @id @default(uuid())
+  userId String
+  teamId String
+  role   String @default("member") // owner, admin, member
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, teamId])
+}
+
+// Cloud Resources
+model Droplet {
+  id         String   @id @default(uuid())
+  name       String
+  region     String
+  size       String
+  status     String   @default("creating") // creating, active, stopped
+  ipAddress  String?
+  userId     String
+  teamId     String?
+  createdAt  DateTime @default(now())
+  
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team Team? @relation(fields: [teamId], references: [id])
+}
+
+model Domain {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  userId    String
+  status    String   @default("pending") // pending, active, failed
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Database {
+  id           String   @id @default(uuid())
+  name         String
+  engine       String   // postgres, mysql, redis
+  version      String
+  status       String   @default("creating")
+  userId       String
+  connectionString String?
+  createdAt    DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Billing
+model Billing {
+  id               String   @id @default(uuid())
+  userId           String
+  stripeCustomerId String?  @unique
+  plan             String   @default("free") // free, pro, enterprise
+  status           String   @default("active")
+  createdAt        DateTime @default(now())
+  
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoices     Invoice[]
+  paymentMethods PaymentMethod[]
+}
+
+model Invoice {
+  id              String   @id @default(uuid())
+  billingId       String
+  stripeInvoiceId String?  @unique
+  amount          Int      // en centimes
+  currency        String   @default("usd")
+  status          String   // paid, unpaid, failed
+  paidAt          DateTime?
+  createdAt       DateTime @default(now())
+  
+  billing Billing @relation(fields: [billingId], references: [id], onDelete: Cascade)
+}
+
+model PaymentMethod {
+  id              String   @id @default(uuid())
+  billingId       String
+  stripeMethodId  String   @unique
+  type            String   // card, bank_account
+  last4           String?
+  isDefault       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  
+  billing Billing @relation(fields: [billingId], references: [id], onDelete: Cascade)
+}
+
+// Marketplace (existant)
+model Vendor {
+  id         String @id @default(uuid())
+  name       String
+  storeSlug  String @unique
+  themeJson  String
+}
