@@ -13,6 +13,7 @@ import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Login from "./features/auth/routes/Login";
+import AuthCallback from "./features/auth/routes/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -89,6 +90,9 @@ const App = () => {
                     {/* Hidden/Special Access */}
                     <Route path="/vrd" element={<Navigate to="/login?role=seller" replace />} />
                     <Route path="/adm-secure" element={<Navigate to="/login?role=admin" replace />} />
+
+                    {/* OAuth Callback */}
+                    <Route path="/auth/callback" element={<AuthCallback />} />
 
                     {/* Protected Routes */}
                     <Route path="/dashboard" element={

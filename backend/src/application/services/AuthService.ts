@@ -107,4 +107,11 @@ export class AuthService {
             },
         };
     }
+
+    /**
+     * Generate JWT token for a user (used by OAuth callbacks)
+     */
+    generateToken(payload: { userId: string; email: string; }): string {
+        return this.jwtService.sign(payload);
+    }
 }

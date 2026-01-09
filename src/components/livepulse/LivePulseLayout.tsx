@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
   Radio,
@@ -33,7 +33,7 @@ import { useLivePulse, SpaceType, PeriodType } from '@/contexts/LivePulseContext
 import { cn } from '@/lib/utils';
 
 interface LivePulseLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
   onNewSignal?: () => void;
 }
 
@@ -69,7 +69,7 @@ export default function LivePulseLayout({ children, onNewSignal }: LivePulseLayo
       {/* Top Bar */}
       <header className="h-14 bg-card border-b border-border sticky top-0 z-50 flex items-center justify-between px-4 lg:px-6">
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="lg:hidden p-2 hover:bg-muted rounded-md"
           >
@@ -107,17 +107,17 @@ export default function LivePulseLayout({ children, onNewSignal }: LivePulseLayo
           </Select>
 
           {/* New Signal Button */}
-          <Button 
-            onClick={onNewSignal} 
-            size="sm" 
+          <Button
+            onClick={onNewSignal}
+            size="sm"
             className="hidden sm:flex gap-2"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden md:inline">Nouveau signal</span>
           </Button>
-          <Button 
-            onClick={onNewSignal} 
-            size="icon" 
+          <Button
+            onClick={onNewSignal}
+            size="icon"
             className="sm:hidden h-9 w-9"
           >
             <Plus className="w-4 h-4" />
@@ -155,9 +155,9 @@ export default function LivePulseLayout({ children, onNewSignal }: LivePulseLayo
         )}>
           <nav className="p-4 space-y-1">
             {navItems.map((item) => {
-              const isActive = location.pathname === item.path || 
+              const isActive = location.pathname === item.path ||
                 (item.path !== '/livepulse' && location.pathname.startsWith(item.path));
-              
+
               return (
                 <Link
                   key={item.path}
@@ -165,8 +165,8 @@ export default function LivePulseLayout({ children, onNewSignal }: LivePulseLayo
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium",
-                    isActive 
-                      ? "bg-primary text-primary-foreground" 
+                    isActive
+                      ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
@@ -191,7 +191,7 @@ export default function LivePulseLayout({ children, onNewSignal }: LivePulseLayo
 
         {/* Overlay for mobile */}
         {sidebarOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-background/80 z-30 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
@@ -200,7 +200,7 @@ export default function LivePulseLayout({ children, onNewSignal }: LivePulseLayo
         {/* Main Content */}
         <main className="flex-1 overflow-auto">
           <div className="p-4 lg:p-6 max-w-7xl mx-auto">
-            {children}
+            {children || <Outlet />}
           </div>
         </main>
       </div>

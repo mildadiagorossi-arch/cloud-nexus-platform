@@ -6,6 +6,8 @@ import {
     UseGuards,
     HttpCode,
     HttpStatus,
+    Req,
+    Res,
 } from '@nestjs/common';
 import {
     AuthService,
@@ -14,6 +16,7 @@ import {
     AuthResponse,
 } from '../../../application/services/AuthService';
 import { JwtAuthGuard } from '../../../application/auth/JwtAuthGuard';
+import { GoogleAuthGuard } from '../../../application/auth/GoogleAuthGuard';
 import { CurrentUser } from '../../../application/auth/decorators/CurrentUser';
 import { Public } from '../../../application/auth/decorators/Public';
 import { User } from '../../../domain/entities/User';
@@ -55,8 +58,32 @@ export class AuthController {
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                // Ajoutez d'autres champs non sensibles si nécessaire (ex: role, createdAt, etc.)
             },
         };
+    }
+
+    /**
+     * Google OAuth - Initiate
+     */
+    @Public()
+    @Get('google')
+    @UseGuards(GoogleAuthGuard)
+    async googleAuth() {
+        // Redirects to Google
+    }
+
+    /**
+     * Google OAuth - Callback
+     */
+    @Public()
+    @Get('google/callback')
+    @UseGuards(GoogleAuthGuard)
+    async googleAuthCallback(@Req() req: any, @Res() res: any) {
+        // Generate JWT for the user
+        const payload = { userId: req.user.id, email: req.user.email };
+        const token = this.authService.generateToken(payload);
+
+        // Redirect to frontend with token
+        res.redirect(`http://localhost:8082/auth/callback?token=${token}`);
     }
 }

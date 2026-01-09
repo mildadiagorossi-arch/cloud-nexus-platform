@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from '../controllers/AuthController';
 import { AuthService } from '../../../application/services/AuthService';
 import { JwtStrategy } from '../../../application/auth/jwt.strategy';
+import { GoogleStrategy } from '../../../application/auth/google.strategy';
 import { PrismaModule } from '../../../infrastructure/persistence/prisma/prisma.module';
 
 @Module({
@@ -21,7 +22,7 @@ import { PrismaModule } from '../../../infrastructure/persistence/prisma/prisma.
         }),
     ],
     controllers: [AuthController],
-    providers: [AuthService, JwtStrategy],
+    providers: [AuthService, JwtStrategy, GoogleStrategy],
     exports: [AuthService, JwtModule],
 })
 export class IdentityModule { }
